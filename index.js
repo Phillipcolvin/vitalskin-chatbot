@@ -1,3 +1,4 @@
+
 // Flujo base para chatbot dermatológico Vital Skin (JavaScript pseudoestructura - adaptado para imitar un dermatólogo estético + cosmetólogo clínico)
 
 const VISION_API_KEY = "AIzaSyCHw2RtvXDVJs5sQogK3ZeYis_Mgauy0Sg";
