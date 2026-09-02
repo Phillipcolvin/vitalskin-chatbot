@@ -1,7 +1,7 @@
 # Ecosistema Digital de IA Soberana — Holding y Compañía
 
 **Documento maestro integrado**  
-Versión: 1.0  
+Versión: 1.1  
 Fecha: 2026-09-02  
 Clasificación: Interno — Protección de datos y ciberseguridad  
 Marco legal: Ley 21.719 (entrada en vigor 1 de diciembre de 2026; existe proyecto de aplazamiento a 2027, pero se planifica contra la fecha vigente)
@@ -10,7 +10,7 @@ Marco legal: Ley 21.719 (entrada en vigor 1 de diciembre de 2026; existe proyect
 
 ## 1. Resumen ejecutivo
 
-Este documento modela el ecosistema digital completo de la holding y sus compañías: desde el cliente final hasta la fábrica, la logística, los pagos, el CRM, las bodegas, los portales públicos y el servicio técnico. El objetivo es diseñar un sistema de IA que **busque, piense, razone y actúe** dentro de un perímetro controlado, con protección de datos sensibles y ciberseguridad de extremo a extremo.
+Este documento modela el ecosistema digital completo de la holding y sus compañías: desde el cliente final hasta la fábrica, la logística, los pagos, el CRM, las bodegas, los portales públicos, los portales de fábrica, el servicio técnico y la cadena documental. El objetivo es diseñar un sistema de IA que **busque, piense, razone y actúe** dentro de un perímetro controlado, con protección de datos sensibles y ciberseguridad de extremo a extremo.
 
 Principio rector: **separar la carga**. La nube solo procesa lo no sensible. Todo lo que no puede salir de la red corre en infraestructura propia, preferentemente air-gapped. El agente de IA es un analista con acceso de lectura total y ejecución acotada: propone, un humano aprueba en lo crítico.
 
@@ -69,6 +69,7 @@ Principio rector: **separar la carga**. La nube solo procesa lo no sensible. Tod
 
 ### 3.4 Proveedores y logística
 - Fábrica (confirmaciones, fechas estimadas, invoices)
+- **Portales de fábrica** (precios, políticas de descuento, listados, órdenes de compra)
 - FedEx (tracking, labels, POD)
 - Mercado Pago (pagos, settlements, comisiones)
 - Banco Santander (extractos, transferencias)
@@ -112,13 +113,20 @@ Principio rector: **separar la carga**. La nube solo procesa lo no sensible. Tod
 13. Correo/portal → documento → OCR/RAG → acción propuesta → aprobación humana si supera umbral.
 14. Almacenamiento local cifrado, trazabilidad, vencimientos.
 
+### 4.7 Portales de fábrica, precios y documentación técnica (nuevo)
+15. **Sincronización de precios**: el agente consulta el portal de fábrica (listado de precios, políticas de descuento, promociones) → normaliza → actualiza la tabla de precios de venta local → recalcula márgenes y precios sugeridos → notifica cambios materiales a comercial.
+16. **Políticas de descuento**: el agente interpreta reglas de descuento por volumen, canal, cliente o temporada → propone matriz de descuentos → humano aprueba → se aplica en cotizaciones y HubSpot.
+17. **Fichas técnicas y manuales**: PDF de ficha técnica, manual de instalación, manual de servicio, guías de seguridad → pipeline de ingesta → chunking estructurado → indexación en RAG local → versionado por número de revisión de fábrica.
+18. **Actualización periódica**: job programado (diario/semanal) detecta cambios en el portal de fábrica → descarga solo deltas → re-indexa → marca versión anterior como obsoleta → audita qué cambió y quién lo aprobó.
+19. **Cotización asistida**: cliente pregunta por producto → IA cruza precio de fábrica + descuento aplicable + stock + lead time → genera cotización con evidencia → humano aprueba envío.
+
 ---
 
 ## 5. Capacidades del agente seguro y escalable
 
-- **Búsqueda**: RAG local sobre RMA, certificados, catálogo, portales, políticas internas.
+- **Búsqueda**: RAG local sobre RMA, certificados, catálogo, portales, políticas internas, **precios de fábrica, fichas técnicas y manuales**.
 - **Pensamiento**: cadena de razonamiento acotada, temperatura baja en tareas críticas, validación de salida antes de ejecutar.
-- **Herramientas tipadas**: conectores hacia RMA, HubSpot, base de certificados, portales, gateway de mensajería, FedEx, Mercado Pago, Santander.
+- **Herramientas tipadas**: conectores hacia RMA, HubSpot, base de certificados, portales, gateway de mensajería, FedEx, Mercado Pago, Santander, **portal de fábrica (precios/descuentos), repositorio documental**.
 - **Permisos y scope**: cada herramienta exige permiso, scope y justificación.
 - **DLP**: bloquea secretos, RUT, correos, datos de clientes antes de cualquier salida.
 - **Sandbox**: ejecución de código no confiable en microVM aislada.
@@ -146,6 +154,11 @@ Principio rector: **separar la carga**. La nube solo procesa lo no sensible. Tod
 | 13 | Falsificación de certificados | Alto | Baja | Verificación criptográfica, base local |
 | 14 | Perfilado de clientes (marketing) | Alto | Media | Consentimiento, minimización de datos |
 | 15 | Superficie de ataque por cada conector | Alto | Media | Segmentación, WAF, least privilege |
+| 16 | **Desincronización de precios de fábrica** (precio de venta desactualizado) | Alto | Media | Job de sync con hash, alerta de delta, aprobación humana |
+| 17 | **Filtración de políticas de descuento** (margen competitivo) | Crítico | Media | Cifrado en reposo, scope estricto, DLP, nunca en prompts de clientes |
+| 18 | **Documento técnico obsoleto en RAG** (manual viejo indexado) | Alto | Media | Versionado, TTL, re-indexación por hash, marca de obsoleto |
+| 19 | **Scraping no autorizado del portal de fábrica** (ban de acceso / ToS) | Medio | Media | Integración oficial o read-only con credenciales rotativas; respetar rate limits |
+| 20 | **Inyección de PDF malicioso** en pipeline de fichas técnicas | Alto | Baja | Sandbox de parsing, validación de firma, cuarentena |
 
 ---
 
@@ -162,8 +175,10 @@ Modelos recomendados: Qwen 3 / Qwen3-Coder 32B, Mistral Small 3.1, Llama 70B, Gr
 - **AnythingLLM** self-hosted: multi-fuente, UI pulida, citations. Mejor para equipos.
 - **PrivateGPT**: air-gap estricto, offline-only, API-first. Mejor para máxima paranoia.
 - **Open WebUI**: ergonomía multi-usuario.
+- **RAGFlow** (alternativa): parsing avanzado de PDFs hostiles (tablas, escaneos, multi-columna) — ideal para fichas técnicas y manuales densos.
+- **Docling** (parser): layout-aware, preserva tablas y estructura; complementa el pipeline de ingesta.
 
-Base vectorial: Qdrant o ChromaDB self-hosted.
+Base vectorial: Qdrant o ChromaDB self-hosted. Embeddings locales: nomic-embed-text o BGE-M3 (multilingüe, soporta español).
 
 ### 7.3 Orquestación
 - **n8n** self-hosted: catálogo profundo, LangChain nodes, comunidad grande. Requiere Enterprise para HA multi-main y secrets externos.
@@ -194,9 +209,21 @@ Ambos deben correr en red propia, nunca en cloud.
 ### 7.8 CRM y portales
 - **HubSpot**: solo API privada (Service Keys, no legacy private apps que se descontinúan en 2026). Desactivar workflows nativos con LLM. Datos del cliente pertenecen al cliente (términos actualizados mayo 2026).
 - **Portales públicos**: conector read-only preferible; integración oficial si existe; nunca credenciales en texto plano.
+- **Portales de fábrica**: conector dedicado (API oficial si existe; si no, scraping controlado con rate limit, rotación de sesión y cuarentena). Credenciales en vault, nunca en código. Sync de precios con hash de integridad y alerta de delta.
 - **FedEx**: API oficial + webhooks AIV para tracking.
 - **Mercado Pago**: API + webhooks idempotentes + conciliación SII.
 - **Santander / bancos**: open banking vía agregadores (Floid) o API directa con consentimiento.
+
+### 7.9 Pipeline de ingesta documental (nuevo)
+- **Origen**: portal de fábrica, correo, uploads manuales, SFTP.
+- **Extracción**: Docling / RAGFlow / MinerU para PDF (tablas, OCR, fórmulas); markitdown para Office.
+- **Normalización**: Markdown estructurado con breadcrumbs de sección y número de página.
+- **Chunking**: 500–1000 tokens, overlap 10–20%, respetando encabezados.
+- **Embeddings**: modelo local (nomic-embed-text / BGE-M3).
+- **Indexación**: Qdrant/ChromaDB con metadata (fuente, versión, fecha, hash, vigencia).
+- **Versionado**: cada documento tiene hash SHA-256; si cambia, se re-indexa y se marca la versión anterior como obsoleta.
+- **Actualización periódica**: job programado detecta deltas en el portal de fábrica → descarga → valida firma/hash → ingesta → notifica cambios materiales.
+- **Cuenta de servicio dedicada**: el pipeline corre con credenciales de solo lectura y scope mínimo; logs de cada ingesta firmados.
 
 ---
 
@@ -204,16 +231,16 @@ Ambos deben correr en red propia, nunca en cloud.
 
 ```
 [ Plano sensible — air-gapped / red aislada ]
-  IA local (vLLM + Qwen 32B) | RAG (AnythingLLM/PrivateGPT) | RMA | Certificados | Vault | DLP | Logs WORM
+  IA local (vLLM + Qwen 32B) | RAG (AnythingLLM/PrivateGPT/RAGFlow) | RMA | Certificados | Precios fábrica | Fichas técnicas | Vault | DLP | Logs WORM
         ↓ (solo resultados limpios)
 [ Plano de orquestación — red interna ]
-  n8n/Activepieces | Gateway WhatsApp | Conectores tipados | Sandbox
+  n8n/Activepieces | Gateway WhatsApp | Conectores tipados | Sandbox | Pipeline de ingesta documental
         ↓
 [ Plano externo — internet controlada ]
-  HubSpot API | FedEx | Mercado Pago | Santander | Portales públicos | Fábrica
+  HubSpot API | FedEx | Mercado Pago | Santander | Portales públicos | Fábrica | Portales de fábrica
 ```
 
-- **Plano 1 (sensible)**: todo lo que no puede salir. Modelos, documentos, RMA, certificados, vault.
+- **Plano 1 (sensible)**: todo lo que no puede salir. Modelos, documentos, RMA, certificados, **precios y políticas de descuento de fábrica**, fichas técnicas, vault.
 - **Plano 2 (orquestación)**: recibe, procesa, enruta. Sin persistencia de PII en claro.
 - **Plano 3 (externo)**: solo recibe resultados limpios o envía datos no sensibles. Credenciales rotativas, mTLS, WAF.
 
@@ -228,6 +255,8 @@ Tareas que **siempre** requieren aprobación humana:
 - Apertura de RMA de alto valor o disputado.
 - Envío de comunicaciones legales o de consentimiento.
 - Cambios en certificados o permisos de instaladores.
+- **Aplicación de cambios materiales en precios de venta o políticas de descuento** derivados del portal de fábrica.
+- **Publicación de cotizaciones** que usen precios o descuentos recién sincronizados.
 
 El agente **prepara** el borrador, cruza datos, detecta inconsistencias y presenta evidencia. El humano **aprueba y firma**. Esto permite escalar sin ceder el control.
 
@@ -241,6 +270,8 @@ El agente **prepara** el borrador, cruza datos, detecta inconsistencias y presen
 4. **Largo plazo (90-180 días)**: vLLM + Qwen 32B en producción; air-gap parcial para RMA/certificados/pagos; sandbox para herramientas; plan de cumplimiento Ley 21.719.
 5. **Gobernanza continua**: versionado de prompts, evaluación semanal, kill switch, reporte de incidentes < 72 h, auditoría financiera con evidencia.
 6. **Principio de minimización**: el agente ve todo en lectura, ejecuta solo lo de la lista blanca, y nada sale sin DLP.
+7. **Sync de fábrica (nuevo)**: implementar conector de precios y descuentos con hash de integridad, alerta de delta y aprobación humana obligatoria antes de publicar cambios en precios de venta.
+8. **Pipeline documental (nuevo)**: Docling/RAGFlow + versionado por hash; job de actualización periódica; cuarentena de PDFs no firmados.
 
 ---
 
@@ -249,13 +280,15 @@ El agente **prepara** el borrador, cruza datos, detecta inconsistencias y presen
 - Servidor con GPU 24 GB VRAM (RTX 4090 o equivalente; nota: 4090 EOL en 2026, mercado de usados).
 - Ollama (piloto) → vLLM (producción).
 - Modelo: Qwen3 32B o Qwen3-Coder 32B.
-- AnythingLLM o PrivateGPT + Qdrant.
+- AnythingLLM o PrivateGPT + Qdrant; RAGFlow/Docling para PDFs densos.
 - n8n self-hosted (Postgres + Redis).
 - Evolution API / WAHA o Cloud API oficial.
 - Infisical o Vault.
 - WAF + reverse proxy.
 - Logs WORM firmados.
 - HubSpot solo por API privada (Service Keys).
+- Conector de portal de fábrica (precios/descuentos) con vault y hash.
+- Pipeline de ingesta documental con versionado.
 
 ---
 
@@ -263,10 +296,11 @@ El agente **prepara** el borrador, cruza datos, detecta inconsistencias y presen
 
 - **Opt-out**: el cliente puede revocar consentimiento por cualquier canal; el agente debe respetarlo y registrar la revocación.
 - **Consentimiento por canal**: WhatsApp, email, web chat requieren base legal distinta; el orquestador etiqueta el canal y aplica la política correspondiente.
-- **Retención**: definir plazos por tipo de dato (RMA, certificados, pagos) alineados a Ley 21.719 y obligaciones contractuales.
+- **Retención**: definir plazos por tipo de dato (RMA, certificados, pagos, **precios de fábrica, fichas técnicas**) alineados a Ley 21.719 y obligaciones contractuales.
 - **Derechos ARSOP**: acceso, rectificación, supresión, oposición, portabilidad — el agente debe poder ejecutarlos sobre la base local.
 - **Transferencia internacional**: si algún dato debe salir (ej. FedEx tracking), documentar la base legal y minimizar.
 - **Incidentes**: protocolo de notificación < 72 h a la Agencia de Protección de Datos y a afectados si hay riesgo alto.
+- **Políticas de descuento como dato sensible comercial**: tratarlas con el mismo rigor que PII; no exponer en respuestas a clientes ni en logs de prompts.
 
 ---
 
@@ -288,17 +322,20 @@ El agente **prepara** el borrador, cruza datos, detecta inconsistencias y presen
 - Sandbox para herramientas.
 - Autonomía total solo en tareas de bajo riesgo (respuestas FAQ, scoring de leads, actualización de tracking).
 - Air-gap parcial para RMA, certificados, pagos.
+- **Sync de precios de fábrica con alerta de delta y aprobación humana.**
+- **Pipeline de fichas técnicas con versionado por hash.**
 
 **Fase 3 — Madurez y cumplimiento (semanas 25+)**
 - Evaluación continua, red teaming, auditoría externa.
 - Cumplimiento pleno Ley 21.719.
 - Documentación de transferencia internacional y DPIA.
+- Automatización de actualización documental periódica con cuarentena y firma.
 
 ---
 
 ## 14. Principio final
 
-El cliente habla con tu bot. Tu bot piensa en tu servidor. HubSpot, FedEx, Mercado Pago y la fábrica solo reciben el resultado limpio. Nada más cruza la frontera. El agente puede buscar, pensar y actuar, pero solo dentro de un **sandbox de permisos auditable**. Fuera de ese sandbox, no toca un peso, una orden ni un dato sensible.
+El cliente habla con tu bot. Tu bot piensa en tu servidor. HubSpot, FedEx, Mercado Pago, la fábrica y sus portales de precios solo reciben el resultado limpio. Nada más cruza la frontera. El agente puede buscar, pensar y actuar, pero solo dentro de un **sandbox de permisos auditable**. Fuera de ese sandbox, no toca un peso, una orden ni un dato sensible.
 
 Esto no es automatización. Es **apalancamiento humano** con soberanía de datos.
 
