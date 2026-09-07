@@ -1,111 +1,101 @@
-# Portales de licitacion y compras — Colvin y Cia. Ltda.
+# Portales de licitación — Colvin y Cía. Ltda.
 
-Documento vivo. Estado: **integrable / automatizable / atendible por bot**.
+Documento vivo. Representante oficial Teledyne FLIR en Chile.
+Colvin ya está inscrito en todos los portales. El objetivo: dejarlos integrables, automatizables y atendibles por el bot para detectar oportunidades sin búsqueda manual.
 
-## Principio
+## Principio rector
 
-Colvin ya esta inscrito y operativo en los portales. El problema no es el acceso: es que hoy un vendedor entra manualmente, busca oportunidades y las transcribe a HubSpot. Eso se elimina.
+**Monitorear primero, integrar después.** Un portal sin volumen real de oportunidades FLIR no se conecta por API: se vigila con alertas. La integración es costo; el monitoreo es barato.
 
-El ecosistema debe:
-1. **Detectar** oportunidades automaticamente (monitoreo + alertas).
-2. **Clasificar** por vertical FLIR (termografia, OGI, seguridad, defensa, automatizacion, UAV).
-3. **Generar lead** en HubSpot con UTM de origen = portal.
-4. **Notificar** al vendedor asignado con resumen y link directo.
-5. **Delegar** la presentacion de oferta a humano. El bot NUNCA presenta ni firma.
+Regla de apagado: un portal que no genere al menos dos oportunidades FLIR al mes en noventa días se apaga.
 
-## Capas de integracion (de barato a caro)
+El bot detecta, clasifica y notifica. **Nunca presenta ni firma ofertas.** Eso es humano, siempre.
 
-| Capa | Que hace | Costo | Cuando
-|---|---|---|---
-| 1. Monitoreo + alerta | Scraping/API + notificacion | Bajo | Etapa 0 — ya
-| 2. Lead automatico | Webhook a HubSpot | Medio | Etapa 1
-| 3. Respuesta asistida | Bot redacta borrador de oferta | Medio | Etapa 2
-| 4. Presentacion automatica | API del portal | Alto | Solo si el portal lo permite y hay volumen
+## Flujo estándar (todos los portales)
 
-Regla: **monitorear primero, integrar despues**. Un portal sin volumen real de oportunidades FLIR no se conecta por API. Se vigila.
+1. **Detección:** scraper/API/alerta del portal → n8n.
+2. **Clasificación:** filtro por vertical FLIR (termografía, OGI, seguridad, defensa, automatización, UAV) y código UNSPSC.
+3. **Enriquecimiento:** monto estimado, fecha de cierre, organismo comprador, vertical.
+4. **Lead en HubSpot:** contacto del organismo + deal con origen = portal.
+5. **Notificación:** vendedor asignado recibe resumen + link + deadline.
+6. **Humano presenta** la oferta en el portal. El bot solo hace seguimiento de estado.
 
-## Portales prioritarios
+## Capa 1 — Integración prioritaria (API o monitoreo activo)
 
-### Prioridad 1 — Estado (obligatorio, API publica)
+### Mercado Público (ChileCompra)
+- **Quién compra:** Estado, hospitales, FF.AA., Carabineros, municipalidades, ministerios.
+- **Por qué importa a Colvin:** el canal obligatorio del Estado (~US$22 mil millones/año). Cámaras térmicas, OGI, seguridad y defensa se compran por aquí.
+- **API:** pública y documentada. Ticket vía ClaveÚnica. Endpoints: `/licitaciones.json` (por fecha, código, estado), datos abiertos OCDS en `datos-abiertos.chilecompra.cl`. Actualización en tiempo real.
+- **Integración:** n8n consulta diaria por palabras clave FLIR + UNSPSC (cámaras térmicas, detectores de gas, sistemas de seguridad). Crea lead automático.
+- **Prioridad:** Etapa 1, semana 1.
 
-**Mercado Publico (ChileCompra)** — api.mercadopublico.cl
-- Organismos: hospitales, FF.AA., Carabineros, municipalidades, ministerios, MOP.
-- Compras de camaras termicas, OGI, seguridad perimetral, deteccion de gases.
-- API REST con ticket (ClaveUnica) + datos abiertos OCDS sin ticket.
-- Filtro UNSPSC: 39120000 (equipos de vigilancia), 46180000 (instrumentos de medicion).
-- Volumen estimado Chile: ~US$22.000 millones/ano. FLIR tiene share real aqui.
+### Unilink (MRO Dealer / Cat4MRO)
+- **Quién compra:** minería y energía — Collahuasi, Codelco, ENAP, Caserones, Sierra Gorda, Mantos Blancos, Lomas Bayas, Alto Norte, Sigdo Koppers, CMP, El Pachón.
+- **Por qué importa:** marketplace B2B MRO más grande de LATAM para minería-energía. Módulo MRO Dealer concentra RFQs de múltiples compradores. 83% de cotizaciones adjudicadas a proveedores sugeridos por algoritmo.
+- **API:** no pública documentada. Integración vía portal de proveedor + alertas por correo/RSS. Catálogo estandarizado MRO.
+- **Integración:** monitoreo de RFQs entrantes + alerta inmediata al vendedor de vertical minería.
+- **Prioridad:** Etapa 1, semana 2.
 
-**SICEP** — sicep.cl
-- Registro de proveedores minero-industrial. Usado por Codelco, BHP, Anglo American, Collahuasi, SQM, Antofagasta Minerals.
-- No tiene API publica documentada. Monitoreo por alerta de correo + scraping controlado.
-- Calificacion por competencias: 7 areas auditadas.
+### SICEP
+- **Quién compra:** principales mineras e industrias — Codelco, BHP, Anglo American, SQM, Glencore.
+- **Por qué importa:** registro calificado de proveedores mineros. Siete competencias auditadas. Sin SICEP, Colvin no existe para el 32% de su margen (Defensa y Minería).
+- **API:** no pública. Monitoreo por alerta de cotizaciones y encuentros de negocios.
+- **Integración:** alerta de nuevas cotizaciones + recordatorio de actualización anual de antecedentes.
+- **Prioridad:** Etapa 1, semana 3.
 
-**RedNegocios (CCS)** — rednegocios.cl
-- Plataforma electronica de proveedores de Codelco. Gestiona MIPYMEs locales.
-- Inscripcion anual con pago. Monitoreo de oportunidades por categoria.
+### RedNegocios (CCS)
+- **Quién compra:** Codelco (registro de proveedores administrado por Cámara de Comercio de Santiago) y red de +8.000 proveedores.
+- **Por qué importa:** llave de entrada a cotizaciones electrónicas de Codelco vía Quadrem/QMarket.
+- **API:** no pública. Alianza reciente con Artikos integra módulos de abastecimiento.
+- **Integración:** monitoreo de cotizaciones Codelco + alerta de renovación anual.
+- **Prioridad:** Etapa 1, semana 3.
 
-### Prioridad 2 — Privados con API o integracion
+### Artikos (CCS)
+- **Quién compra:** grandes empresas chilenas con SRM propio — compras, licitaciones, contratos, facturación.
+- **Por qué importa:** 25 años de trayectoria, filial de CCS. Módulo de licitaciones con alta carga documental y preguntas/respuestas.
+- **API:** no pública. Portal de proveedores con cotizaciones y adjudicaciones.
+- **Integración:** alerta de licitaciones y RFQs en categorías FLIR.
+- **Prioridad:** Etapa 2.
 
-**Artikos** — artikos.cl
-- Modulo de licitaciones B2B. Gestiona RFQ, ofertas, adjudicacion.
-- Usado por grandes empresas industriales. Posible integracion via API o export.
+### Wherex
+- **Quién compra:** +200 empresas en LATAM, +70.000 proveedores, +900 categorías. IA para matching de proveedores.
+- **Por qué importa:** plataforma de compras mejor evaluada en LATAM. Automatiza licitaciones y conciliación de facturas.
+- **API:** no pública documentada. Matching por IA del propio portal.
+- **Integración:** monitoreo de procesos de compra relevantes + alerta.
+- **Prioridad:** Etapa 2.
 
-**Unilink** — unilinkcorp.com
-- Marketplace MRO minero-energetico. +60.000 proveedores, +US$12 mil millones transados.
-- Clientes: Collahuasi, Sierra Gorda, ENAP, Caserones.
-- Integracion ERP (SAP/Oracle) disponible. Prioridad para vertical mineria.
+### iConstruye
+- **Quién compra:** +1.500 empresas compradoras de construcción, 70% de las constructoras más grandes del país.
+- **Por qué importa:** seguridad perimetral, detección de fuego y termografía en obras e infraestructura.
+- **API:** no pública. Marketplace con cotizaciones y órdenes de compra.
+- **Integración:** alerta de requerimientos de materiales y servicios de seguridad/termografía.
+- **Prioridad:** Etapa 2.
 
-**Wherex** — wherex.com
-- Plataforma de licitaciones digitales sector privado. +60.000 proveedores LATAM.
-- Enfocado en transparencia y compliance. API de consulta de procesos.
+### Senegocia
+- **Quién compra:** +160 empresas compradoras, +25.000 proveedores, certificación ISO 27001. Sectores: minería, consumer, alimentos, retail, salud, infraestructura, industrial.
+- **Por qué importa:** cobertura transversal; oportunidades diarias por categoría.
+- **API:** no pública. Portal de proveedores con notificaciones.
+- **Integración:** alerta de licitaciones privadas en categorías FLIR.
+- **Prioridad:** Etapa 2.
 
-**iConstruye** — iconstruye.com
-- Marketplace de construccion. +1.500 compradores, +70% constructoras grandes.
-- Relevante para infraestructura, seguridad de obra, deteccion de incendios.
+## Capa 2 — Solo si un mandante lo exige contractualmente
 
-### Prioridad 3 — Solo si mandante lo exige
+### Achilles
+- Certificación global de cadena de suministro. Alianza con Sutmin para minería en Chile y LATAM. Se activa solo cuando un comprador (p. ej. minera internacional) lo exige. No se integra proactivamente.
 
-**Achilles**, **RyCE**, **SAP Ariba** — no se integran proactivamente. Se monitorean cuando un cliente las exige contractualmente.
+### RyCE
+- Registro nacional de proveedores y contratistas con análisis financiero, legal y laboral. Se activa por exigencia de mandante. No genera flujo automático.
 
-## Flujo objetivo (Etapa 1)
+### SAP Ariba
+- Plataforma corporativa de grandes empresas. Se activa solo si un cliente específico la usa como canal de compra. No es prioridad de monitoreo.
 
-```
-Portal (Mercado Publico / SICEP / Unilink / ...)
-    |
-    v  [n8n: monitor + clasificador]
-Oportunidad detectada (UNSPSC + keywords FLIR)
-    |
-    v  [n8n: crea Lead en HubSpot]
-Lead con UTM=portal, vertical, monto estimado, fecha cierre
-    |
-    v  [n8n: notifica vendedor]
-Vendedor recibe resumen + link + borrador de oferta (humano presenta)
-    |
-    v  [humano]
-Oferta presentada en el portal
-```
+## Credenciales y accesos
 
-## Datos clave a capturar por oportunidad
+Van en la zona `00_NO_IA_NUNCA_COLVIN` del Drive. Nunca en el repo. GitHub indexa todo y lo vende a brokers de datos.
 
-- Codigo de licitacion / ID portal
-- Organismo comprador
-- Categoria UNSPSC
-- Monto estimado
-- Fecha de cierre
-- Requerimientos tecnicos (extraidos)
-- Vertical FLIR asignada
-- Vendedor responsable
+## KPI del módulo
 
-## Reglas duras
-
-- El bot **detecta y notifica**. No presenta ofertas, no firma, no compromete precios de fabrica.
-- Credenciales de portales van en `00_NO_IA_NUNCA_COLVIN`. Nunca en el repo.
-- Cada portal integrado debe mover un KPI: oportunidades detectadas/mes, leads generados, tasa de presentacion, tasa de adjudicacion.
-- Si un portal no genera al menos 2 oportunidades FLIR/mes en 90 dias, se apaga el monitoreo.
-
-## Proximos pasos
-
-1. Inventario de portales donde Colvin esta inscrito hoy (checklist).
-2. Priorizar Mercado Publico (API) y Unilink (mineria) para Etapa 1.
-3. Definir keywords y UNSPSC de FLIR para el clasificador.
-4. Primer flujo: Mercado Publico -> HubSpot -> notificacion vendedor.
+- Oportunidades FLIR detectadas / mes (meta: ≥2 por portal activo).
+- Tiempo desde publicación hasta notificación al vendedor (meta: <2 horas).
+- Tasa de conversión lead licitación → propuesta presentada.
+- Tasa de adjudicación sobre propuestas presentadas.
