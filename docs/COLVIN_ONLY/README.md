@@ -8,7 +8,6 @@ Representante oficial Teledyne FLIR en Chile.
 - `20_IA_OUTPUT_COLVIN/` — borradores, actualizaciones diarias, índices e inventarios.
 - `00_NO_IA_NUNCA_COLVIN/` — credenciales, clientes reales, contratos de fábrica, finanzas, accesos a portales, respaldos de código con env.
 - `30_HUMANO_SOLO_COLVIN/` — decisiones comerciales, contratos firmados, listas de clientes, precios de fábrica, accesos admin.
-- `SEPARACION_OHANA_REFERENCIA/` — lecciones rescatadas y deuda descartada de Ohana Core. Ohana queda como antecedente histórico, no como plantilla.
 - `PILOTO_WHATSAPP_COLVIN/` — flujos dorados, intents y scoring, handoff humano, KPIs y evidencia, playbooks de Inside Sales.
 - `AUDITORIA_BASE_001/` — AS-IS de producción, secretos rotados, fuentes de verdad, recorridos dorados, riesgos críticos, evidencia del piloto.
 
@@ -19,8 +18,8 @@ Representante oficial Teledyne FLIR en Chile.
 3. n8n self-hosted en VPS chileno. Datos de conversación no pasan por SaaS extranjero.
 4. Un solo flujo vertical primero: lead de alta intención → HubSpot → bot WhatsApp → handoff humano.
 5. FedEx, Visail, Chipit y Bsale van después, por webhooks, no por código propio.
-6. Separar Ohana Core de Colvin. No mezclar tenants.
-7. Piloto de 90 días. Medir tiempo de primera respuesta, MQL-to-SQL y margen asistido. Si no mueve esos números, se apaga.
+6. Piloto de 90 días. Medir tiempo de primera respuesta, MQL-to-SQL y margen asistido. Si no mueve esos números, se apaga.
+7. Esta base es 100% Colvin y Cía. Ltda. No se mencionan ni se usan como plantilla otras empresas, marcas o productos ajenos a la operación FLIR en Chile.
 
 ## North Star
 
