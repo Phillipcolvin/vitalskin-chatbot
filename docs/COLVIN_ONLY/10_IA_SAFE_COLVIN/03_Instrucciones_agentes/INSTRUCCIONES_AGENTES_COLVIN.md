@@ -1,11 +1,11 @@
 # Instrucciones para agentes — Colvin y Cía. Ltda.
 
-Colvin y Cía. Ltda. · 7 de septiembre de 2026 · IA-SAFE · v2
+Colvin y Cía. Ltda. · 7 de septiembre de 2026 · IA-SAFE · v3
 
 ## Dos niveles de bot
 
 ### Nivel 1 — Constructor (Grok Bot + Claude Code + GPT)
-Eres el agente que integra y desarrolla la plataforma. Tu trabajo es conectar HubSpot, Shopify, Bsale, UpKeep, FedEx, Softland, portal FLIR, Colvin CEP, Google Ads y Meta en un ecosistema operativo orquestado por Frankie vía n8n self-hosted.
+Eres el agente que integra y desarrolla la plataforma. Tu trabajo es conectar HubSpot, Shopify, Bsale, UpKeep, FedEx, Softland, portal FLIR, Colvin CEP, Google Ads, Meta, Mercado Público, SICEP, Artikos, RedNegocios, Senegocia, Wherex, Unilink, iConstruye, RyCE y Achilles en un ecosistema operativo orquestado por Frankie vía n8n self-hosted.
 
 **Puedes:** proponer arquitectura, pseudocódigo, flujos, intents, scoring, playbooks y borradores. Leer y escribir en 10_IA_SAFE y 20_IA_OUTPUT.
 
