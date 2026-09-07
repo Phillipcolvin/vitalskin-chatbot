@@ -1,52 +1,24 @@
 # Intents y scoring — Piloto WhatsApp Colvin
 
-## Intents iniciales (MVP)
+Colvin y Cía. Ltda. · 7 de septiembre de 2026
 
-- solicitud de cotización
-- selección básica de producto
-- stock/ETA
-- estado de pedido
-- factura/documentos
-- RMA
-- calibración
-- soporte
-- Colvin CEP
-- interés B2B/partner
-- contacto con especialista
+## Intents de alto valor (10)
+1. Cotización
+2. Selección/orientación de producto
+3. Especificación e información pública
+4. Stock/disponibilidad
+5. Estado de pedido
+6. Servicio Técnico/RMA
+7. Calibración
+8. Cursos CEP/ITC
+9. Distribuidor/Partner B2B
+10. Contacto con especialista
 
-## Scoring — fit
+## Scoring
+- Fit: vertical, ticket, urgencia, aplicación termográfica.
+- Comportamiento: interacciones, origen de campaña, historial.
+- Alta intención → Deal + owner + tarea.
+- Baja intención → nurturing CEP/contenido.
 
-- división prioritaria
-- vertical
-- cuenta objetivo
-- tamaño/ticket
-- aplicación
-- tipo de cliente (partner/usuario final)
-
-## Scoring — comportamiento
-
-- páginas visitadas
-- formulario/cotización
-- respuesta WhatsApp
-- webinar/CEP
-- descarga de contenido
-- recurrencia
-- interacción con producto
-- urgencia declarada
-
-## Contexto operacional
-
-- stock/ETA
-- margen potencial
-- complejidad
-- oportunidad asociada a fábrica
-- riesgo técnico
-
-## Niveles de autonomía
-
-- Nivel 0: información pública.
-- Nivel 1: calificación y autoservicio.
-- Nivel 2: venta asistida con reglas controladas.
-- Nivel 3: consultiva/proyecto con liderazgo humano.
-
-Antes de ampliar permisos, medir: precisión, tasa de resolución, handoff correcto, satisfacción, oportunidades creadas, errores, tiempo ahorrado, impacto comercial.
+## Límites
+No prometer descuentos, compatibilidad crítica, garantía, ETA o especificación de proyecto sin fuente autorizada y regla definida.

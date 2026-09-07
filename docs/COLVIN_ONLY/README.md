@@ -1,26 +1,22 @@
-# COLVIN_ONLY — Base documental Colvin y Cía. Ltda.
+# Base Documental Colvin y Cía. Ltda. — 100% propia
 
-Representante oficial Teledyne FLIR en Chile.
+Esta base es exclusiva de **Colvin y Cía. Ltda.**, representante y servicio técnico de Teledyne FLIR en Chile.
 
-## Estructura
+## Regla dura
+- No se citan, mencionan ni usan como plantilla otras empresas, marcas o productos ajenos a la operación FLIR de Colvin.
+- Todo el contenido es propio: arquitectura, procesos, flujos, integraciones y playbooks de Colvin.
+- Si un documento histórico sirvió de inspiración, se reescribe con el nombre y contexto de Colvin antes de incorporarse.
 
-- `10_IA_SAFE_COLVIN/` — lo que la IA puede leer y escribir (gobierno, mapa, procesos anonimizados, flujos de bots sin secretos, integraciones funcionales, playbooks sin PII, glosario, checklist).
+## Zonas
+- `10_IA_SAFE_COLVIN/` — lo que la IA puede leer/escribir: gobierno, mapa del ecosistema, procesos anonimizados, flujos de bots sin secretos, integraciones funcionales, playbooks sin PII, glosario, checklist.
 - `20_IA_OUTPUT_COLVIN/` — borradores, actualizaciones diarias, índices e inventarios.
 - `00_NO_IA_NUNCA_COLVIN/` — credenciales, clientes reales, contratos de fábrica, finanzas, accesos a portales, respaldos de código con env.
 - `30_HUMANO_SOLO_COLVIN/` — decisiones comerciales, contratos firmados, listas de clientes, precios de fábrica, accesos admin.
-- `PILOTO_WHATSAPP_COLVIN/` — flujos dorados, intents y scoring, handoff humano, KPIs y evidencia, playbooks de Inside Sales.
-- `AUDITORIA_BASE_001/` — AS-IS de producción, secretos rotados, fuentes de verdad, recorridos dorados, riesgos críticos, evidencia del piloto.
+- `AUDITORIA_BASE_001/` — AS-IS de producción, secretos, fuentes de verdad, recorridos dorados, riesgos.
+- `PILOTO_WHATSAPP_COLVIN/` — flujos dorados, intents y scoring, handoff humano, KPIs.
 
-## Reglas duras
+## Protocolo
+Ver `10_IA_SAFE_COLVIN/01_Gobierno_y_reglas/PROTOCOLO_IA_COLVIN.md`.
 
-1. Congelar documentación nueva hasta que el bot responda un lead real.
-2. Cero secretos en código o en 10_IA_SAFE. Rotar claves de Google API ya indexadas en GitHub.
-3. n8n self-hosted en VPS chileno. Datos de conversación no pasan por SaaS extranjero.
-4. Un solo flujo vertical primero: lead de alta intención → HubSpot → bot WhatsApp → handoff humano.
-5. FedEx, Visail, Chipit y Bsale van después, por webhooks, no por código propio.
-6. Piloto de 90 días. Medir tiempo de primera respuesta, MQL-to-SQL y margen asistido. Si no mueve esos números, se apaga.
-7. Esta base es 100% Colvin y Cía. Ltda. No se mencionan ni se usan como plantilla otras empresas, marcas o productos ajenos a la operación FLIR en Chile.
-
-## North Star
-
-Margen real incremental originado o asistido digitalmente.
+## Estado
+PRE-GATE 0. Congelar documentación nueva hasta que el bot responda un lead real.

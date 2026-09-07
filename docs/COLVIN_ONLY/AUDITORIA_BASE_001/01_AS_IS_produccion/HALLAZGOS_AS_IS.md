@@ -1,35 +1,26 @@
-# Hallazgos AS-IS — Auditoría BASE-001 (read-only)
+# Hallazgos AS-IS — Producción Colvin
 
-Colvin y Cía. Ltda. · 7 de septiembre de 2026
+Fecha: 7 de septiembre de 2026 · Estado: PRE-GATE 0 · Solo lectura.
 
-## Deriva de despliegue
-
-El README dice Cloud Run, el app.yaml dice App Engine Python 3.11. Nadie sabe qué corre de verdad. Eso es una puerta trasera abierta, no una arquitectura.
-
-## Secretos en el código
-
-Claves de Google API en scripts y notebooks. Ya están indexadas en GitHub. Los competidores no necesitan espías — tienen un crawler.
-
-## RMA en Azure Functions
-
-Sin owner corporativo ni backup probado. Si cae, se pierde el ciclo de vida del activo y toda la recurrencia.
-
-## Archivos monolíticos
-
-Archivos de cuatro mil a seis mil líneas concentrando lógica. Un solo bug y se cae el banco de conciliación.
-
-## Código de otros proyectos mezclado con Colvin
-
-Hay código y patrones de otros proyectos conviviendo en el mismo núcleo. Mezclar verticales ajenas contamina el aislamiento del tenant Colvin. Separar ya y construir limpio.
-
-## Backlog hinchado
-
-El backlog de 105 tareas sigue creciendo mientras el piloto no arranca. Congelar documentación nueva hasta que el bot responda un lead real.
+## Hallazgos confirmados
+1. **Deriva de despliegue**: README describe Cloud Run; app.yaml y workflow declaran App Engine Python 3.11. Nadie sabe qué corre de verdad.
+2. **Secretos en código**: claves de Google API en scripts y notebooks, indexadas en GitHub.
+3. **RMA en Azure Functions** sin owner corporativo ni backup probado.
+4. **Archivos de 4.000–6.000 líneas** concentrando lógica (reconciliación, orders, app.py).
+5. **Código de otros proyectos mezclado con Colvin**: el repositorio contiene restos de desarrollos ajenos a la operación FLIR. Acción: construir el núcleo limpio desde cero, sin heredar deuda.
+6. **main y release-prod divergen 330 commits**; ambas ramas sin protección; workflow deshabilitado manualmente.
+7. **Permisos Drive**: carpeta maestra con anyone/writer; no se modificaron automáticamente.
+8. **Contrato FLIR**: archivo unsigned disponible; no confirma vigencia.
 
 ## Acciones inmediatas
+- BASE-001: auditoría AS-IS read-only, sin tocar código.
+- Rotar secretos expuestos.
+- Congelar documentación nueva hasta que el bot responda un lead real.
+- Un solo flujo vertical: lead → HubSpot → bot WhatsApp → handoff.
+- n8n self-hosted en VPS chileno para datos de conversación.
 
-1. Congelar documentación. Cero documentos nuevos hasta que el bot responda un lead real.
-2. Ejecutar BASE-001 hoy. Auditoría AS-IS read-only, sin tocar código. Resolver la verdad de despliegue y los secretos primero.
-3. Un solo flujo vertical: lead de alta intención → HubSpot → bot WhatsApp → handoff. Nada más.
-4. n8n self-hosted en VPS chileno.
-5. Construir el núcleo Colvin limpio, sin reutilizar código de otros proyectos.
+## No hacer
+- No fusionar ramas.
+- No reactivar deploy.yml.
+- No desplegar sin identificar producción real.
+- No mezclar tenants ni verticales ajenas.
