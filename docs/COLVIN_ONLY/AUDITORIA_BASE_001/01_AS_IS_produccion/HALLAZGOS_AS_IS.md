@@ -18,9 +18,9 @@ Sin owner corporativo ni backup probado. Si cae, se pierde el ciclo de vida del 
 
 Archivos de cuatro mil a seis mil líneas concentrando lógica. Un solo bug y se cae el banco de conciliación.
 
-## Ohana Core mezclado con Colvin
+## Código de otros proyectos mezclado con Colvin
 
-Ohana Core está pensado para Barros Wellness, no para Colvin. Mezclar dos verticales en un solo núcleo contamina el aislamiento multi-tenant. Separar ya.
+Hay código y patrones de otros proyectos conviviendo en el mismo núcleo. Mezclar verticales ajenas contamina el aislamiento del tenant Colvin. Separar ya y construir limpio.
 
 ## Backlog hinchado
 
@@ -32,4 +32,4 @@ El backlog de 105 tareas sigue creciendo mientras el piloto no arranca. Congelar
 2. Ejecutar BASE-001 hoy. Auditoría AS-IS read-only, sin tocar código. Resolver la verdad de despliegue y los secretos primero.
 3. Un solo flujo vertical: lead de alta intención → HubSpot → bot WhatsApp → handoff. Nada más.
 4. n8n self-hosted en VPS chileno.
-5. Separar Ohana Core de Colvin.
+5. Construir el núcleo Colvin limpio, sin reutilizar código de otros proyectos.
