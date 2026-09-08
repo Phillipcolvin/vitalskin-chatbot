@@ -36,10 +36,13 @@ Termografía (T&M), detección de gases y OGI, seguridad, defensa, automatizaci�
 ### Fábrica
 - Portal FLIR: catálogo, precios, lead time, soporte técnico.
 
+### Logística (dos capas, no mezclar)
+- **Internacional (fábrica → Chile):** FedEx. Solo despachos desde fábrica FLIR hacia aduanas y bodegas de Colvin en Chile. Tracking de importación.
+- **Local (bodega → cliente):** Shipit (integrado nativo en Shopify) como carrier principal, Chilexpress y otros locales según tipo de producto, tipo de orden y tipo de cliente. El carrier se elige por regla en el checkout/pedido.
+
 ### Dinero
 - Bsale: facturación electrónica.
 - Mercado Pago y Banco Santander: cobranza.
-- FedEx: despacho y tracking.
 - Softland: ERP financiero.
 
 ### Orquestación
@@ -52,6 +55,7 @@ Termografía (T&M), detección de gases y OGI, seguridad, defensa, automatizaci�
 1. Lead (Ads/Meta/portal) → HubSpot → bot WhatsApp → handoff a vendedor.
 2. Oportunidad de licitación (cualquier portal) → clasificador UNSPSC → lead HubSpot → notificación vendedor. Bot detecta; humano presenta.
 3. Cliente con serial → perfil 360 → RMA o renovación.
+4. Pedido local → Shipit/Chilexpress → tracking al cliente. (FedEx no interviene aquí.)
 
 ## Regla dura
 
