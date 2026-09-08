@@ -1,26 +1,32 @@
 # Diccionario de datos — Portales de licitación — Colvin y Cía. Ltda.
 
-Colvin y Cía. Ltda. · 7 de septiembre de 2026 · IA-SAFE · v1
+Colvin y Cía. Ltda. · 7 de septiembre de 2026 · IA-SAFE · v1.1
 
 Documento de referencia para bots y agentes. Define cada entidad de los portales de licitación con su nombre, propósito, campos clave, sistema de verdad y reglas de privacidad. Sin PII real, sin secretos, sin credenciales.
 
 ## 1. Licitación / Oportunidad
 - **Qué es:** proceso de compra publicado en un portal donde Colvin puede ofertar equipos FLIR, servicios técnicos o capacitación.
-- **Campos clave:** ID portal, portal origen, título, descripción, comprador, RUT comprador, región, fecha publicación, fecha cierre, tipo (pública/privada), estado, monto estimado, moneda, modalidad de pago, UNSPSC, vertical FLIR, score de afinidad, URL bases, documentos adjuntos.
+- **Campos clave:** ID portal, portal origen, título, descripción, comprador, RUT comprador (dato público del mandante), región, fecha publicación, fecha cierre, tipo (pública/privada), estado, monto estimado, moneda, modalidad de pago, UNSPSC, vertical FLIR, score de afinidad, URL bases, documentos adjuntos.
 - **Sistema de verdad:** portal origen (Mercado Público, Unilink, SICEP, etc.) → HubSpot (lead/oportunidad).
 - **Regla:** el bot detecta y clasifica; nunca presenta oferta ni firma. Si el UNSPSC no mapea a una vertical FLIR, se descarta automáticamente.
 
 ## 2. Comprador / Mandante
 - **Qué es:** organismo o empresa que publica la licitación.
-- **Campos clave:** RUT, razón social, tipo (Estado/minera/constructora/retail/salud), región, contacto, historial de compras FLIR, vertical dominante.
+- **Campos clave:** RUT (dato público, espejo de Licitación), razón social, tipo (Estado/minera/constructora/retail/salud), región, vertical dominante, historial de compras FLIR.
 - **Sistema de verdad:** portal origen → HubSpot (empresa).
-- **Regla:** el bot identifica al comprador por RUT, nunca por datos bancarios ni contactos personales del mandante.
+- **Regla:** el RUT del comprador es dato público de licitación y vive en la entidad Licitación. Los datos de contacto del mandante (nombre, cargo, correo, teléfono) son sensibles: el bot los detecta pero nunca los almacena ni los usa; los deriva a humano para contacto directo. Nunca datos bancarios.
 
 ## 3. Ítem / Línea de licitación
 - **Qué es:** producto o servicio específico solicitado dentro de una licitación.
-- **Campos clave:** correlativo, código producto, nombre, descripción, UNSPSC, cantidad, unidad de medida, especificación técnica, serial FLIR aplicable, precio unitario estimado.
+- **Campos clave:** correlativo, código producto, nombre, descripción, UNSPSC, cantidad, unidad de medida, especificación técnica, modelo FLIR candidato (no serial — el serial se asigna solo tras adjudicación), precio unitario estimado.
 - **Sistema de verdad:** portal origen → HubSpot (línea de oportunidad).
-- **Regla:** el bot mapea el ítem a un producto FLIR del catálogo; si no hay match, deriva a humano.
+- **Regla:** el bot mapea el ítem a un modelo FLIR del catálogo usando la especificación técnica; si no hay match, deriva a humano. Nunca inventa ni busca seriales en una licitación — el serial no existe hasta que Colvin gana y despacha.
+
+## 3b. Pregunta al portal (NUEVO)
+- **Qué es:** consulta técnica o aclaratoria que Colvin envía al mandante antes del cierre de la licitación, a través del canal de preguntas del portal (Mercado Público, Artikos, etc.).
+- **Campos clave:** ID pregunta, ID licitación, portal, fecha envío, texto de la pregunta (redactado por el bot, revisado por humano), fecha respuesta, respuesta del mandante, estado (borrador/enviada/respondida), responsable humano.
+- **Sistema de verdad:** portal origen (envío) → HubSpot (registro de la pregunta y su respuesta).
+- **Regla:** el bot redacta la pregunta técnica a partir de la especificación del ítem y la envía al vendedor para aprobación. El humano aprueba y envía. El bot nunca envía preguntas sin visto bueno humano. Las respuestas del mandante se indexan en la base de conocimiento para futuras licitaciones similares.
 
 ## 4. Oferta / Propuesta
 - **Qué es:** respuesta de Colvin a una licitación (técnica y económica).
@@ -30,9 +36,9 @@ Documento de referencia para bots y agentes. Define cada entidad de los portales
 
 ## 5. Adjudicación
 - **Qué es:** resultado de la licitación.
-- **Campos clave:** ID licitación, ganador, monto adjudicado, fecha, motivo (si se conoce), seriales FLIR comprometidos, fecha de entrega comprometida.
+- **Campos clave:** ID licitación, ganador, monto adjudicado, fecha, motivo (si se conoce), seriales FLIR comprometidos (asignados post-adjudicación), fecha de entrega comprometida.
 - **Sistema de verdad:** portal origen → HubSpot (closed won/lost) → Bsale (factura si gana).
-- **Regla:** el bot registra el resultado y notifica al vendedor; no celebra ni reclama.
+- **Regla:** el bot registra el resultado y notifica al vendedor; no celebra ni reclama. Los seriales comprometidos se generan recién en esta etapa y se vinculan al Activo/Serial del diccionario general.
 
 ## 6. Inscripción / Habilitación de proveedor
 - **Qué es:** estado de Colvin como proveedor habilitado en cada portal.
@@ -60,3 +66,8 @@ Documento de referencia para bots y agentes. Define cada entidad de los portales
 
 ## Regla general
 Si un campo de un portal no está en este diccionario, el bot lo trata como sensible y lo deriva a humano. Las credenciales de acceso a cada portal viven en `00_NO_IA_NUNCA_COLVIN`, nunca en el repo.
+
+## Changelog v1 → v1.1
+- Unificado: RUT del comprador es dato público y vive solo en Licitación; contactos del mandante son sensibles y se derivan a humano.
+- Nuevo: entidad 3b Pregunta al portal — el bot redacta, el humano aprueba y envía.
+- Corregido: ítem usa "modelo FLIR candidato", no serial. El serial se asigna recién tras adjudicación (entidad 5).
